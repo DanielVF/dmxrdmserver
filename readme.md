@@ -19,6 +19,8 @@ Then start up the app:
 
     /Users/dvf/anaconda3/bin/flask run --without-threads
 
+Visit http://127.0.0.1:5000/ in your browser for a sample of what you can do with the API.
+
 ## Todo
 
 - Kill bugs
