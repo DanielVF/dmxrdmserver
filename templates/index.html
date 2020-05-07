@@ -1,0 +1,49 @@
+<style>
+    body{
+        font-family: Iosevka, sans-serif;
+    }
+    .dmxValues > input {
+        width: 40px;
+    }
+</style>
+
+
+<h3>Send DMX</h3>
+<form action="/v1/dmx" method="POST">
+    <div class="dmxValues">
+    <input name="1" value="128">
+    <input name="2" value="0">
+    <input name="3" value="255">
+    <input name="4" value="255">
+    <input name="5" value="0">
+    <input name="6" value="0">
+    -
+    <input type="submit" value="SEND">
+    </div>
+
+</form>
+
+<h3>Send RDM</h3>
+<form action="/v1/rdm" method="POST">
+    <div>
+        Command Class
+        <select name="command_class">
+            <option value="10">0x10 Discovery</option>
+            <option value="20">0x20 Get</option>
+            <option value="30" selected>0x30 Set</option>
+        </select>
+
+        Destination
+        <input name="destination" value="7151:31323334">
+
+        Pid
+        <input name="pid" value="1000">
+
+        Data
+        <input name="data" value="01">
+
+        - <input type="submit" value="SEND">
+
+    </div>
+
+</form>
