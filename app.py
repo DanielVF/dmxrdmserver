@@ -54,9 +54,55 @@ def rdm():
     return json.dumps({
         'request': ' '.join('{:02x}'.format(x) for x in p.serialize()),
         'interface_code': r.type,
-        'response': ' '.join('{:02x}'.format(x) for x in r.data),
+        'response': ' '.join('{:02x}'.format(x) for x in r.data[1:]),
         'rdm_response_type': rdm_response_type(r),
     })
+
+@app.route('/v1/rdm_discovery', methods=['POST'])
+def rdm_discovery():
+    global tx
+    p = RdmPacket()
+    p.destination_uid = bytes([0xFF,0xFF,0xFF,0xFF,0xFF,0xFF])
+    sn = u.serial_number
+    p.source_uid = bytes([0x45,0x4e,sn[3],sn[2],sn[1],sn[0]])
+    p.transaction_number = tx
+    tx = (tx + 1) % 255
+    p.port_id_or_response_type = 1
+    p.command_class = to_bytes("10")[0] # 0x10 = E120_DISCOVERY_COMMAND
+    p.pid = to_bytes("00 01") # 0x0001 == E120_DISC_UNIQUE_BRANCH
+    p.data = to_bytes(request.form['low'])+to_bytes(request.form['high'])
+    
+    r = u.rdm_disc_unique(p.serialize())
+
+
+    return json.dumps({
+        'request': ' '.join('{:02x}'.format(x) for x in p.serialize()),
+        'interface_code': r.type,
+        'response': ' '.join('{:02x}'.format(x) for x in r.data[1:]),
+        'rdm_response_type': rdm_response_type(r),
+        'fixture_address': ' '.join('{:02x}'.format(x) for x in look_for_discovery_response(r.data[1:]))
+    })
+
+def look_for_discovery_response(data):
+    if len(data) == 0:
+        return ''
+    for i in range(0, len(data)):
+        if data[i] == 0xaa:
+            break
+    i+=1
+    
+    out = []
+    for j in range(0, 6):
+        if len(data) < i + 2:
+            return ''
+        a = data[i]
+        b = data[i+1]
+        v = (a & ~0xAA) + (b & ~0x55)
+        i+=2
+        out.append(v)
+    
+    return bytes(out)
+    
 
 CLEANER_RE = re.compile('[^0-9A-Za-z]')
 def to_bytes(s):
