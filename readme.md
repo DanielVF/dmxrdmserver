@@ -23,9 +23,6 @@ Visit http://127.0.0.1:5000/ in your browser for a sample of what you can do wit
 
 ## Todo
 
-- Kill bugs
-- Better read parser
-- RDM Discovery packets
 - RDM auto discovery
 - Nice display of RDM responses
 
