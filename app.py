@@ -27,7 +27,7 @@ def dmx():
         if k.isnumeric():
             dmx[int(k)] = int(v)
     u.dmx(bytes(dmx))
-    return 'DMX'
+    return '{"status":"ok"}'
 
 tx = 0
 
